@@ -85,3 +85,18 @@ function hasObstacleCollision(width, height) {
     return overlapsHorizontally && outsideGap;
   });
 }
+
+function getAutopilotTargetY(width, height) {
+  const bird = getBirdBounds(width, height);
+  const nextObstacle = obstacles.find(
+    (obstacle) => obstacle.x + obstacle.width >= bird.left,
+  );
+
+  if (!nextObstacle) {
+    return height / 2 - (bird.bottom - bird.top) / 2;
+  }
+
+  const birdSize = bird.bottom - bird.top;
+  return nextObstacle.gapTop +
+    (nextObstacle.gapBottom - nextObstacle.gapTop - birdSize) / 2;
+}

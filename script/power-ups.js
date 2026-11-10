@@ -1,10 +1,12 @@
 let powerUpPickups = [];
 let powerUpElapsed = 0;
 let hasStoredPowerUp = false;
+let immunityRemaining = 0;
 
 const powerUpInterval = 6;
 const powerUpSpeed = 210;
 const powerUpRadius = 15;
+const immunityDuration = 5;
 
 const powerUpSlot = document.querySelector("#power-up-slot");
 const powerUpSlotLabel = document.querySelector("#power-up-slot-label");
@@ -13,11 +15,11 @@ function updatePowerUpSlot() {
   powerUpSlot.disabled = !hasStoredPowerUp;
   powerUpSlot.classList.toggle("power-up-slot--filled", hasStoredPowerUp);
   powerUpSlotLabel.textContent = hasStoredPowerUp
-    ? "Power-up — clique para usar"
+    ? "Ativar imunidade"
     : "Slot vazio";
   powerUpSlot.setAttribute(
     "aria-label",
-    hasStoredPowerUp ? "Usar power-up armazenado" : "Slot vazio",
+    hasStoredPowerUp ? "Ativar imunidade por cinco segundos" : "Slot vazio",
   );
 }
 
@@ -25,11 +27,13 @@ function resetPowerUps() {
   powerUpPickups = [];
   powerUpElapsed = powerUpInterval - 2;
   hasStoredPowerUp = false;
+  immunityRemaining = 0;
   updatePowerUpSlot();
 }
 
-function drawPowerUps(context, width, height, deltaSeconds, isPlaying) {
+function drawPowerUps(context, width, height, deltaSeconds, isPlaying, canCollect = true) {
   if (isPlaying) {
+    immunityRemaining = Math.max(0, immunityRemaining - deltaSeconds);
     powerUpElapsed += deltaSeconds;
 
     while (powerUpElapsed >= powerUpInterval) {
@@ -44,7 +48,9 @@ function drawPowerUps(context, width, height, deltaSeconds, isPlaying) {
       pickup.x -= powerUpSpeed * deltaSeconds;
     }
 
-    collectPowerUps(width, height);
+    if (canCollect) {
+      collectPowerUps(width, height);
+    }
     powerUpPickups = powerUpPickups.filter(
       (pickup) => pickup.x + powerUpRadius >= 0,
     );
@@ -77,6 +83,7 @@ function collectPowerUps(width, height) {
     powerUpPickups.splice(pickupIndex, 1);
     hasStoredPowerUp = true;
     updatePowerUpSlot();
+    playPowerUpSound();
   }
 }
 
@@ -101,7 +108,17 @@ function useStoredPowerUp() {
   }
 
   hasStoredPowerUp = false;
+  immunityRemaining = immunityDuration;
   updatePowerUpSlot();
+  playPowerUpActivationSound();
+}
+
+function isBirdImmune() {
+  return immunityRemaining > 0;
+}
+
+function isBirdBlinkVisible() {
+  return Math.floor((immunityDuration - immunityRemaining) * 10) % 2 === 0;
 }
 
 powerUpSlot.addEventListener("click", useStoredPowerUp);

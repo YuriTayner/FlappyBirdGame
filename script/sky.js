@@ -9,11 +9,13 @@ let clouds = [];
 let distanceMeters = 0;
 let distanceElapsed = 0;
 let gameState = "ready";
+let autoPilotEnabled = false;
 
 const startScreen = document.querySelector("#start-screen");
 const deathScreen = document.querySelector("#death-screen");
 const finalDistance = document.querySelector("#final-distance");
 const restartButton = document.querySelector("#restart-button");
+const autoPilotButton = document.querySelector("#autopilot-toggle");
 
 function resetClouds() {
   const width = window.innerWidth;
@@ -87,7 +89,18 @@ function drawSky(deltaSeconds = 0) {
 
   drawDistanceCounter(width, frameDelta);
   drawObstacles(context, width, height, frameDelta, gameState === "playing");
-  drawPowerUps(context, width, height, frameDelta, gameState === "playing");
+  drawPowerUps(
+    context,
+    width,
+    height,
+    frameDelta,
+    gameState === "playing",
+    !autoPilotEnabled,
+  );
+
+  if (gameState === "playing" && autoPilotEnabled) {
+    updateBirdAutopilot(getAutopilotTargetY(width, height));
+  }
 
   const reachedBottom = drawBird(
     context,
@@ -96,10 +109,18 @@ function drawSky(deltaSeconds = 0) {
     frameDelta,
     gameState === "playing",
   );
+  drawCoins(
+    context,
+    width,
+    height,
+    frameDelta,
+    gameState === "playing",
+    !autoPilotEnabled,
+  );
 
   if (
     gameState === "playing" &&
-    (reachedBottom || hasObstacleCollision(width, height))
+    (reachedBottom || (!isBirdImmune() && hasObstacleCollision(width, height)))
   ) {
     finishGame();
   }
@@ -129,26 +150,32 @@ function drawDistanceCounter(width, deltaSeconds) {
   context.textBaseline = "top";
   context.lineWidth = 4;
   context.strokeStyle = "rgba(255, 255, 255, 0.85)";
-  context.strokeText(label, width - 24, 20);
+  context.strokeText(label, width - 24, 68);
   context.fillStyle = "#12485e";
-  context.fillText(label, width - 24, 20);
+  context.fillText(label, width - 24, 68);
 }
 
-function startGame() {
+function startGame(useAutoPilot = false) {
+  initializeSounds();
   resetBird(window.innerWidth, window.innerHeight);
   resetObstacles();
+  resetCoins();
   resetPowerUps();
+  autoPilotEnabled = useAutoPilot;
   gameState = "playing";
+  startBackgroundMusic();
   startScreen.hidden = true;
   deathScreen.hidden = true;
   powerUpSlot.hidden = false;
+  updateAutoPilotButton();
 }
 
 function restartGame() {
+  const useAutoPilot = autoPilotEnabled;
   distanceMeters = 0;
   distanceElapsed = 0;
   resetClouds();
-  startGame();
+  startGame(useAutoPilot);
 }
 
 function finishGame() {
@@ -160,7 +187,22 @@ function finishGame() {
   finalDistance.textContent = `${distanceMeters} m`;
   deathScreen.hidden = false;
   powerUpSlot.hidden = true;
+  playGameOverMusic();
+  updateAutoPilotButton();
   restartButton.focus({ preventScroll: true });
+}
+
+function updateAutoPilotButton() {
+  autoPilotButton.hidden = gameState !== "playing";
+  autoPilotButton.setAttribute("aria-pressed", String(autoPilotEnabled));
+  autoPilotButton.textContent = autoPilotEnabled
+    ? "Desligar piloto automático"
+    : "Piloto automático";
+}
+
+function toggleAutoPilot() {
+  autoPilotEnabled = !autoPilotEnabled;
+  updateAutoPilotButton();
 }
 
 let previousFrameTime = 0;
@@ -180,7 +222,13 @@ window.addEventListener("resize", () => {
   drawSky();
 });
 
-document.querySelector("#start-button").addEventListener("click", startGame);
+document
+  .querySelector("#start-button")
+  .addEventListener("click", () => startGame());
+document
+  .querySelector("#start-autopilot-button")
+  .addEventListener("click", () => startGame(true));
+autoPilotButton.addEventListener("click", toggleAutoPilot);
 restartButton.addEventListener("click", restartGame);
 
 resizeCanvas();

@@ -4,17 +4,23 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="theme-color" content="#7cccf4" />
-		<title>O jogo</title>
+		<title>Flappy Bird</title>
 		<link rel="stylesheet" href="style/style.css" />
 		<script src="script/bird.js" defer></script>
 		<script src="script/controls.js" defer></script>
 		<script src="script/obstacles.js" defer></script>
+		<script src="script/sounds.js" defer></script>
+		<script src="script/coins.js" defer></script>
 		<script src="script/power-ups.js" defer></script>
 		<script src="script/sky.js" defer></script>
 	</head>
 	<body>
 		<main class="sky" aria-label="O jogo">
 			<canvas class="sky__canvas" aria-hidden="true"></canvas>
+			<div class="coin-counter" aria-label="Moedas coletadas">
+				<span class="coin-counter__icon" aria-hidden="true"></span>
+				<span>Moedas: <strong id="coin-count">0</strong></span>
+			</div>
 			<button
 				class="power-up-slot"
 				id="power-up-slot"
@@ -26,6 +32,15 @@
 				<span class="power-up-slot__icon" aria-hidden="true"></span>
 				<span id="power-up-slot-label">Slot vazio</span>
 			</button>
+			<button
+				class="autopilot-toggle"
+				id="autopilot-toggle"
+				type="button"
+				aria-pressed="false"
+				hidden
+			>
+				Piloto automático
+			</button>
 			<section
 				class="game-screen game-screen--start"
 				id="start-screen"
@@ -34,9 +49,16 @@
 				aria-labelledby="start-title"
 			>
 				<div class="game-screen__content">
-					<h1 id="start-title">O jogo</h1>
+					<h1 id="start-title">Flappy Bird</h1>
 					<button class="game-screen__button" id="start-button" type="button">
 						Iniciar
+					</button>
+					<button
+						class="game-screen__button game-screen__button--secondary"
+						id="start-autopilot-button"
+						type="button"
+					>
+						Iniciar piloto automático
 					</button>
 				</div>
 			</section>
