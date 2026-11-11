@@ -1,3 +1,4 @@
+
 let coins = [];
 let coinSpawnIn = 0;
 let coinsCollected = 0;
@@ -18,7 +19,14 @@ function resetCoins() {
   coinCount.textContent = coinsCollected;
 }
 
-function drawCoins(context, width, height, deltaSeconds, isPlaying, canCollect = true) {
+function drawCoins(
+  context,
+  width,
+  height,
+  deltaSeconds,
+  isPlaying,
+  canCollect = true
+) {
   if (isPlaying) {
     coinSpawnIn -= deltaSeconds;
 
@@ -27,6 +35,7 @@ function drawCoins(context, width, height, deltaSeconds, isPlaying, canCollect =
         x: width + coinRadius,
         y: height * (0.18 + Math.random() * 0.64),
       });
+
       coinSpawnIn += randomCoinInterval();
     }
 
@@ -37,7 +46,10 @@ function drawCoins(context, width, height, deltaSeconds, isPlaying, canCollect =
     if (canCollect) {
       collectCoins(width, height);
     }
-    coins = coins.filter((coin) => coin.x + coinRadius >= 0);
+
+    coins = coins.filter(
+      (coin) => coin.x + coinRadius >= 0
+    );
   }
 
   for (const coin of coins) {
@@ -52,14 +64,21 @@ function collectCoins(width, height) {
     const overlapsHorizontally =
       bird.right > coin.x - coinRadius &&
       bird.left < coin.x + coinRadius;
+
     const overlapsVertically =
       bird.bottom > coin.y - coinRadius &&
       bird.top < coin.y + coinRadius;
 
     if (overlapsHorizontally && overlapsVertically) {
-      coinsCollected += 1;
+
+      // Com poder ativo, cada moeda vale 2
+      const multiplier = isDoubleCoinsActive() ? 2 : 1;
+
+      coinsCollected += multiplier;
+
       coinCount.textContent = coinsCollected;
       playCoinSound();
+
       return false;
     }
 
@@ -69,20 +88,45 @@ function collectCoins(width, height) {
 
 function drawCoin(context, coin) {
   context.beginPath();
-  context.arc(coin.x, coin.y, coinRadius + 5, 0, Math.PI * 2);
-  context.fillStyle = "rgba(255, 213, 42, 0.25)";
+
+  context.arc(
+    coin.x,
+    coin.y,
+    coinRadius + 5,
+    0,
+    Math.PI * 2
+  );
+
+  context.fillStyle = "rgba(255,213,42,0.25)";
   context.fill();
 
   context.beginPath();
-  context.arc(coin.x, coin.y, coinRadius, 0, Math.PI * 2);
+
+  context.arc(
+    coin.x,
+    coin.y,
+    coinRadius,
+    0,
+    Math.PI * 2
+  );
+
   context.fillStyle = "#ffd52a";
   context.fill();
+
   context.lineWidth = 3;
   context.strokeStyle = "#fff4c4";
   context.stroke();
 
   context.beginPath();
-  context.arc(coin.x, coin.y, coinRadius * 0.48, 0, Math.PI * 2);
+
+  context.arc(
+    coin.x,
+    coin.y,
+    coinRadius * 0.48,
+    0,
+    Math.PI * 2
+  );
+
   context.lineWidth = 2;
   context.strokeStyle = "#d99b12";
   context.stroke();

@@ -1,85 +1,267 @@
+
 <!doctype html>
 <html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="theme-color" content="#7cccf4" />
-		<title>Flappy Bird</title>
-		<link rel="stylesheet" href="style/style.css" />
-		<script src="script/bird.js" defer></script>
-		<script src="script/controls.js" defer></script>
-		<script src="script/obstacles.js" defer></script>
-		<script src="script/sounds.js" defer></script>
-		<script src="script/coins.js" defer></script>
-		<script src="script/power-ups.js" defer></script>
-		<script src="script/sky.js" defer></script>
-	</head>
-	<body>
-		<main class="sky" aria-label="O jogo">
-			<canvas class="sky__canvas" aria-hidden="true"></canvas>
-			<div class="coin-counter" aria-label="Moedas coletadas">
-				<span class="coin-counter__icon" aria-hidden="true"></span>
-				<span>Moedas: <strong id="coin-count">0</strong></span>
-			</div>
-			<button
-				class="power-up-slot"
-				id="power-up-slot"
-				type="button"
-				aria-label="Slot vazio"
-				disabled
-				hidden
-			>
-				<span class="power-up-slot__icon" aria-hidden="true"></span>
-				<span id="power-up-slot-label">Slot vazio</span>
-			</button>
-			<button
-				class="autopilot-toggle"
-				id="autopilot-toggle"
-				type="button"
-				aria-pressed="false"
-				hidden
-			>
-				Piloto automático
-			</button>
-			<section
-				class="game-screen game-screen--start"
-				id="start-screen"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="start-title"
-			>
-				<div class="game-screen__content">
-					<h1 id="start-title">Flappy Bird</h1>
-					<button class="game-screen__button" id="start-button" type="button">
-						Iniciar
-					</button>
-					<button
-						class="game-screen__button game-screen__button--secondary"
-						id="start-autopilot-button"
-						type="button"
-					>
-						Iniciar piloto automático
-					</button>
-				</div>
-			</section>
-			<section
-				class="game-screen game-screen--death"
-				id="death-screen"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="death-title"
-				hidden
-			>
-				<div class="game-screen__content">
-					<h1 id="death-title">Fim de jogo</h1>
-					<p class="game-screen__distance">
-						Você percorreu <strong id="final-distance">0 m</strong>
-					</p>
-					<button class="game-screen__button" id="restart-button" type="button">
-						Reiniciar
-					</button>
-				</div>
-			</section>
-		</main>
-	</body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#7cccf4" />
+
+  <title>Flappy Bird</title>
+
+  <!-- ESTILO DO JOGO -->
+  <link rel="stylesheet" href="style/style.css" />
+
+  <!-- SISTEMA DE PERSONAGENS -->
+  <script src="script/characters.js" defer></script>
+
+  <!-- PASSARINHO -->
+  <script src="script/bird.js" defer></script>
+
+  <!-- CONTROLES -->
+  <script src="script/controls.js" defer></script>
+
+  <!-- OBSTÁCULOS -->
+  <script src="script/obstacles.js" defer></script>
+
+  <!-- SONS -->
+  <script src="script/sounds.js" defer></script>
+
+  <!-- MOEDAS E MULTIPLICADOR 2X -->
+  <script src="script/coins.js" defer></script>
+
+  <!-- PODERES: VIDA, ESCUDO E MOEDAS 2X -->
+  <script src="script/power-ups.js" defer></script>
+
+  <!-- RANKING E NOMES DOS JOGADORES -->
+  <script src="script/ranking.js" defer></script>
+
+  <!-- SISTEMA PRINCIPAL DO JOGO -->
+  <script src="script/sky.js" defer></script>
+</head>
+
+<body>
+
+  <main class="sky" aria-label="O jogo Flappy Bird">
+
+    <!-- CENÁRIO -->
+    <canvas
+      class="sky__canvas"
+      aria-hidden="true"
+    ></canvas>
+
+    <!-- CONTADOR DE MOEDAS -->
+    <div
+      class="coin-counter"
+      aria-label="Moedas coletadas"
+    >
+      <span
+        class="coin-counter__icon"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Moedas:
+        <strong id="coin-count">0</strong>
+      </span>
+    </div>
+
+    <!-- SLOT DE PODER -->
+    <button
+      class="power-up-slot"
+      id="power-up-slot"
+      type="button"
+      aria-label="Slot vazio"
+      disabled
+      hidden
+    >
+      <span
+        class="power-up-slot__icon"
+        aria-hidden="true"
+      ></span>
+
+      <span id="power-up-slot-label">
+        Slot vazio
+      </span>
+    </button>
+
+    <!-- BOTÃO DO PILOTO AUTOMÁTICO -->
+    <button
+      class="autopilot-toggle"
+      id="autopilot-toggle"
+      type="button"
+      aria-pressed="false"
+      hidden
+    >
+      Piloto automático
+    </button>
+
+    <!-- ========================= -->
+    <!-- TELA INICIAL -->
+    <!-- ========================= -->
+
+    <section
+      class="game-screen game-screen--start"
+      id="start-screen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="start-title"
+    >
+
+      <div class="game-screen__content">
+
+        <h1 id="start-title">
+          Flappy Bird
+        </h1>
+
+        <!-- O campo de nome é criado pelo ranking.js -->
+
+        <!-- INICIAR PARTIDA -->
+        <button
+          class="game-screen__button"
+          id="start-button"
+          type="button"
+        >
+          Iniciar
+        </button>
+
+        <!-- PILOTO AUTOMÁTICO -->
+        <button
+          class="game-screen__button game-screen__button--secondary"
+          id="start-autopilot-button"
+          type="button"
+        >
+          Iniciar piloto automático
+        </button>
+
+        <!-- ESCOLHER PERSONAGEM -->
+        <button
+          class="game-screen__button game-screen__button--secondary"
+          id="characters-button"
+          type="button"
+        >
+          🎨 Personagens
+        </button>
+
+        <!-- PERSONAGEM SELECIONADO -->
+        <div class="character-selected">
+
+          <span>
+            Selecionado:
+          </span>
+
+          <span
+            class="character-preview"
+            id="character-preview"
+          ></span>
+
+          <strong id="selected-character-name">
+            Clássico
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================= -->
+    <!-- MENU DE PERSONAGENS -->
+    <!-- ========================= -->
+
+    <section
+      class="characters-menu"
+      id="characters-menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Escolher personagem"
+      hidden
+    >
+
+      <div class="characters-menu__content">
+
+        <h2>
+          Escolha seu personagem
+        </h2>
+
+        <!-- PERSONAGENS GERADOS PELO JAVASCRIPT -->
+        <div
+          class="character-options"
+          id="character-options"
+        ></div>
+
+        <!-- VOLTAR AO MENU INICIAL -->
+        <button
+          class="game-screen__button"
+          id="characters-close"
+          type="button"
+        >
+          Voltar
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- ========================= -->
+    <!-- TELA DE FIM DE JOGO -->
+    <!-- ========================= -->
+
+    <section
+      class="game-screen game-screen--death"
+      id="death-screen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="death-title"
+      hidden
+    >
+
+      <div class="game-screen__content">
+
+        <h1 id="death-title">
+          Fim de jogo
+        </h1>
+
+        <!-- DISTÂNCIA PERCORRIDA -->
+        <p class="game-screen__distance">
+
+          Você percorreu
+
+          <strong id="final-distance">
+            0 m
+          </strong>
+
+        </p>
+
+        <!--
+          O ranking.js acrescenta automaticamente:
+          - Nome do jogador
+          - Resultado em metros e moedas
+          - Ranking das 10 melhores partidas
+        -->
+
+        <!-- REINICIAR COM O MESMO PERSONAGEM -->
+        <button
+          class="game-screen__button"
+          id="restart-button"
+          type="button"
+        >
+          Reiniciar
+        </button>
+
+        <!-- VOLTAR PARA O MENU PRINCIPAL -->
+        <button
+          class="game-screen__button game-screen__button--secondary"
+          id="main-menu-button"
+          type="button"
+        >
+          🏠 Menu principal
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
 </html>
